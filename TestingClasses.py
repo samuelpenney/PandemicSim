@@ -1,4 +1,23 @@
 import random
+'''
+Locations:
+    0 - Home
+    1 - Coffee Shop
+    2 - Gym
+    3 - Office Building 1
+    4 - Office Building 2
+    5 - Office Building 3
+    6 - Restaurant
+    7 - Grocery Store
+    8 - Park
+
+Transit Types:
+    1 - Walking
+    2 - Car
+    3 - Public Transport
+    4 - Taxi
+    5 - Biking
+'''
 class Person():
     def __init__(self, name):
         self.name = name
