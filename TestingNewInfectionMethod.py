@@ -24,18 +24,14 @@ class Person():
     Morning = None
     Midday = None
     Evening = None
-    Transit = None
-class NTFR(Person):
-    Morning = random.randint(1, 7)
-    Midday = random.randint(1, 7)
-    Evening = random.randint(1, 7)
+
 
 def CreatePopulation(people):
     houses = (people // 3) + (people % 3)
     humans = []
     Households= []
     for i in range(people):
-        humans.append(NTFR(f"Person{i + 1}"))
+        humans.append(Person(f"Person{i + 1}"))
     for i in range(houses):
         home = []
         for j in range(3):
@@ -49,7 +45,10 @@ def InfectHuman(HouseHolds):
     number2 = random.randint(0, 2)
     Households[number][number2].infected = True
 
+
+
 Households = CreatePopulation(Population)
+InfectHuman(Households)
 
 for i in range(len(Households)):
     print(f"Household {i + 1}:")
