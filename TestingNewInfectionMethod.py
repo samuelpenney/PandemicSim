@@ -96,7 +96,7 @@ def Home(Households):
                 if not Households[i][j].infected and not Households[i][j].past_infected:
                     Households[i][j].Exposed = True
 
-def DayCycle(Households):
+def DayCycle(Households, infectrate):
     for i in range(len(Households)):
         for j in range(len(Households[i])):
             if Households[i][j].infected:
@@ -106,7 +106,7 @@ def DayCycle(Households):
                     Households[i][j].infected = False
                     Households[i][j].infected_days = 0
             elif Households[i][j].Exposed and not Households[i][j].past_infected:
-                number = random.randint(1, 50)
+                number = random.randint(1, infectrate)
                 if number == 1:
                     Households[i][j].infected = True
                     Households[i][j].infected_days = 0
@@ -140,14 +140,15 @@ def main():
         return
 
     Total_days = int(input("Enter the number of days: "))
+    infectrate = int(input("Enter the infection rate: "))
     Households = CreatePopulation(Population)
     InfectHuman(Households)
-    DisplayInfo(Households)
+    #DisplayInfo(Households)
 
     total_infected = sum(1 for household in Households for person in household if person.infected or person.past_infected)
 
     for day in range(1, Total_days + 1):
-        DayCycle(Households)
+        DayCycle(Households, infectrate)
         current_infected = sum(1 for household in Households for person in household if person.infected)
         total_infected = sum(1 for household in Households for person in household if person.infected or person.past_infected)
 
