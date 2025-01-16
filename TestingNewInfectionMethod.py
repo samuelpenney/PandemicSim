@@ -11,6 +11,7 @@ class Person():
         self.Morning = None
         self.Midday = None
         self.Evening = None
+        self.Exposed = False
 
 def CreatePopulation(people):
     houses = (people // 3) + (people % 3)
@@ -54,10 +55,7 @@ def Morning(Households):
     for i in range(len(Households)):
         for j in range(len(Households[i])):
             if Households[i][j].Morning in warningareas and not Households[i][j].infected and not Households[i][j].past_infected:
-                number = random.randint(0,3)
-                if number == 1:
-                    Households[i][j].infected = True
-                    Households[i][j].infected_days = 0
+                Households[i][j].Exposed = True
     
 def Midday(Households):
     warningareas = []
@@ -71,10 +69,7 @@ def Midday(Households):
     for i in range(len(Households)):
         for j in range(len(Households[i])):
             if Households[i][j].Midday in warningareas and not Households[i][j].infected and not Households[i][j].past_infected:
-                number = random.randint(0,3)
-                if number == 1:
-                    Households[i][j].infected = True
-                    Households[i][j].infected_days = 0
+                Households[i][j].Exposed = True
 
 def Evening(Households):
     warningareas = []
@@ -88,10 +83,7 @@ def Evening(Households):
     for i in range(len(Households)):
         for j in range(len(Households[i])):
             if Households[i][j].Evening in warningareas and not Households[i][j].infected and not Households[i][j].past_infected:
-                number = random.randint(0,3)
-                if number == 1:
-                    Households[i][j].infected = True
-                    Households[i][j].infected_days = 0
+                Households[i][j].Exposed = True
 
 def Home(Households):
     for i in range(len(Households)):
@@ -102,10 +94,7 @@ def Home(Households):
         if House_exposed:
             for j in range(len(Households[i])):
                 if not Households[i][j].infected and not Households[i][j].past_infected:
-                    number = random.randint(0,3)
-                    if number == 1:
-                        Households[i][j].infected = True
-                        Households[i][j].infected_days = 0
+                    Households[i][j].Exposed = True
 
 def DayCycle(Households):
     for i in range(len(Households)):
@@ -116,10 +105,31 @@ def DayCycle(Households):
                     Households[i][j].past_infected = True
                     Households[i][j].infected = False
                     Households[i][j].infected_days = 0
+            elif Households[i][j].Exposed and not Households[i][j].past_infected:
+                number = random.randint(1, 50)
+                if number == 1:
+                    Households[i][j].infected = True
+                    Households[i][j].infected_days = 0
+            Households[i][j].Exposed = False
+
     Morning(Households)
     Midday(Households)
     Evening(Households)
     Home(Households)
+
+    for i in range(len(Households)):
+        for j in range(len(Households[i])):
+            if Households[i][j].infected:
+                Households[i][j].infected_days += 1
+                if Households[i][j].infected_days == 3:
+                    Households[i][j].past_infected = True
+                    Households[i][j].infected = False
+                    Households[i][j].infected_days = 0
+            elif Households[i][j].Exposed and not Households[i][j].past_infected:
+                number = random.randint(1, 50)
+                if number == 1:
+                    Households[i][j].infected = True
+                    Households[i][j].infected_days = 0
 
 def main():
     day = 0
@@ -132,6 +142,7 @@ def main():
     Total_days = int(input("Enter the number of days: "))
     Households = CreatePopulation(Population)
     InfectHuman(Households)
+    DisplayInfo(Households)
 
     total_infected = sum(1 for household in Households for person in household if person.infected or person.past_infected)
 
@@ -148,7 +159,6 @@ def main():
 
         if day % 7 == 0:
             week += 1
-            print(f"\tEnd of Week {week}: {current_infected} currently infected")
 
     if Population > 0:
         print(f"Simulation Over\nTotal Infected: {total_infected}")
