@@ -1,6 +1,6 @@
 import random
 
-class Person():
+class Person:
     def __init__(self, name):
         self.name = name
         self.infected = False
@@ -18,7 +18,7 @@ def CreatePopulation(people):
     humans = []
     Households = []
     for i in range(people):
-        humans.append(Person(f"Person{i + 1}"))
+        humans.append(Person(f"Person {i + 1}"))
     for i in range(houses):
         home = []
         for j in range(3):
@@ -27,42 +27,32 @@ def CreatePopulation(people):
         Households.append(home)
     for i in range(len(Households)):
         for j in range(len(Households[i])):
-            Households[i][j].home = i
+            Households[i][j].home = i + 1
 
     return Households
 
-def InfectHuman(Households):
-    household_index = random.randint(0, len(Households) - 1)
-    person_index = random.randint(0, len(Households[household_index]) - 1)
-    Households[household_index][person_index].infected = True
+def Infect(Households):
+    house_i = random.randint(0, len(Households) - 1)
+    person_i = random.randint(0, len(Households[house_i]) - 1)
+    Households[house_i][person_i].infected = True
 
-def DisplayInfo(Households):
-    for i in range(len(Households)):
-        print(f"Household {i+1}:")
-        for j in range(len(Households[i])):
-            print(f"\t{Households[i][j].home} and {Households[i][j].infected}")
-
-def Morning(Households):
+def Morning(Households, locations):
     warningareas = []
     for i in range(len(Households)):
         for j in range(len(Households[i])):
-            Households[i][j].Morning = random.randint(0, 100)
-    for i in range(len(Households)):
-        for j in range(len(Households[i])):
+            Households[i][j].Morning = random.randint(0, locations)
             if Households[i][j].infected:
                 warningareas.append(Households[i][j].Morning)
     for i in range(len(Households)):
         for j in range(len(Households[i])):
             if Households[i][j].Morning in warningareas and not Households[i][j].infected and not Households[i][j].past_infected:
                 Households[i][j].Exposed = True
-    
-def Midday(Households):
+
+def Midday(Households, locations):
     warningareas = []
     for i in range(len(Households)):
         for j in range(len(Households[i])):
-            Households[i][j].Midday = random.randint(0, 100)
-    for i in range(len(Households)):
-        for j in range(len(Households[i])):
+            Households[i][j].Midday = random.randint(0, locations)
             if Households[i][j].infected:
                 warningareas.append(Households[i][j].Midday)
     for i in range(len(Households)):
@@ -70,13 +60,11 @@ def Midday(Households):
             if Households[i][j].Midday in warningareas and not Households[i][j].infected and not Households[i][j].past_infected:
                 Households[i][j].Exposed = True
 
-def Evening(Households):
+def Evening(Households, locations):
     warningareas = []
     for i in range(len(Households)):
         for j in range(len(Households[i])):
-            Households[i][j].Evening = random.randint(0, 100)
-    for i in range(len(Households)):
-        for j in range(len(Households[i])):
+            Households[i][j].Evening = random.randint(0, locations)
             if Households[i][j].infected:
                 warningareas.append(Households[i][j].Evening)
     for i in range(len(Households)):
@@ -86,83 +74,64 @@ def Evening(Households):
 
 def Home(Households):
     for i in range(len(Households)):
-        House_exposed = False
+        HomeExposed = False
         for j in range(len(Households[i])):
             if Households[i][j].infected:
-                House_exposed = True
-        if House_exposed:
+                HomeExposed = True
+        if HomeExposed:
             for j in range(len(Households[i])):
                 if not Households[i][j].infected and not Households[i][j].past_infected:
                     Households[i][j].Exposed = True
 
-def DayCycle(Households, infectrate):
+def DayCycle(Households, locations, infectionRate):
     for i in range(len(Households)):
         for j in range(len(Households[i])):
             if Households[i][j].infected:
                 Households[i][j].infected_days += 1
                 if Households[i][j].infected_days == 3:
-                    Households[i][j].past_infected = True
                     Households[i][j].infected = False
                     Households[i][j].infected_days = 0
-            elif Households[i][j].Exposed and not Households[i][j].past_infected:
-                number = random.randint(1, infectrate)
+                    Households[i][j].past_infected = True
+            elif Households[i][j].Exposed and not Households[i][j].past_infected and not Households[i][j].infected:
+                number = random.randint(1, infectionRate)
                 if number == 1:
                     Households[i][j].infected = True
                     Households[i][j].infected_days = 0
             Households[i][j].Exposed = False
-
-    Morning(Households)
-    Midday(Households)
-    Evening(Households)
+    
+    Morning(Households, locations)
+    Midday(Households, locations)
+    Evening(Households, locations)
     Home(Households)
 
-    for i in range(len(Households)):
-        for j in range(len(Households[i])):
-            if Households[i][j].infected:
-                Households[i][j].infected_days += 1
-                if Households[i][j].infected_days == 3:
-                    Households[i][j].past_infected = True
-                    Households[i][j].infected = False
-                    Households[i][j].infected_days = 0
-            elif Households[i][j].Exposed and not Households[i][j].past_infected:
-                number = random.randint(1, 50)
-                if number == 1:
-                    Households[i][j].infected = True
-                    Households[i][j].infected_days = 0
-
-def main():
+def Main():
     day = 0
-    week = 0
-    Population = int(input("Enter the number of people: "))
-    if Population <= 0:
-        print("Invalid population size. Exiting simulation.")
+    people = int(input("Enter the number of people: "))
+    locations = int(input("Enter the number of locations: "))
+    infectionRate = int(input("Enter the infection rate: "))
+    days = int(input("Enter the number of days: "))
+    if people <= 0 or locations <= 0 or infectionRate <= 0 or days <= 0:
+        print("Invalid input. Exiting")
         return
-
-    Total_days = int(input("Enter the number of days: "))
-    infectrate = int(input("Enter the infection rate: "))
-    Households = CreatePopulation(Population)
-    InfectHuman(Households)
-    #DisplayInfo(Households)
+    Households = CreatePopulation(people)
+    Infect(Households)
 
     total_infected = sum(1 for household in Households for person in household if person.infected or person.past_infected)
 
-    for day in range(1, Total_days + 1):
-        DayCycle(Households, infectrate)
+    while day <= days:
+        DayCycle(Households, locations, infectionRate)
         current_infected = sum(1 for household in Households for person in household if person.infected)
-        total_infected = sum(1 for household in Households for person in household if person.infected or person.past_infected)
-
+        
         print(f"Day {day}: {current_infected} currently infected")
 
         if current_infected == 0:
             print(f"All infections resolved by day {day}. Ending simulation early.")
             break
+            
+        day += 1
 
-        if day % 7 == 0:
-            week += 1
-
-    if Population > 0:
-        print(f"Simulation Over\nTotal Infected: {total_infected}")
-        print(f"Percentage Infected: {total_infected / Population * 100:.2f}%")
-
-
-main()
+    total_infected = sum(1 for household in Households for person in household if person.infected or person.past_infected)
+    print(f"Simulation Over\nTotal Infected: {total_infected}")
+    print(f"Percentage Infected: {total_infected / people * 100:.2f}%")
+        
+Main()
