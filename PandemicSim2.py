@@ -1,5 +1,5 @@
 import random
-
+import time
 
 
 class Person:
@@ -112,6 +112,7 @@ def Main():
     locations = int(input("Enter the number of locations: "))
     infectionRate = int(input("Enter the infection rate: "))
     days = int(input("Enter the number of days: "))
+    start_time = time.time()
     if people <= 0 or locations <= 0 or infectionRate <= 0 or days <= 0:
         print("Invalid input. Exiting")
         return
@@ -135,5 +136,11 @@ def Main():
     total_infected = sum(1 for household in Households for person in household if person.infected or person.past_infected)
     print(f"Simulation Over\nTotal Infected: {total_infected}")
     print(f"Percentage Infected: {total_infected / people * 100:.2f}%")
+    return start_time
         
-Main()
+start_time = Main()
+
+end_time = time.time()
+
+elasped_time = end_time - start_time
+print(f"Elapsed time: {elasped_time:.2f} seconds")
