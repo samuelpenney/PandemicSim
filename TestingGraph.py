@@ -9,7 +9,6 @@ class Person:
         self.infected_days = 0
         self.home = None
         self.past_infected = False
-        self.Count = False
         self.Morning = None
         self.Midday = None
         self.Evening = None
