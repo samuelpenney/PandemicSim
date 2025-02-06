@@ -1,5 +1,6 @@
 import random
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 class Person:
     def __init__(self, name):
@@ -98,14 +99,18 @@ def Main():
     Households = CreatePopulation(people)
     Infect(Households)
 
-    total_infected = sum(1 for household in Households for person in household if person.infected or person.past_infected)
-
     never_infected = []
     currently_infected = []
     past_infected = []
     days_list = []
 
-    while day <= days:
+    fig, ax = plt.subplots()
+    ax.set_xlabel('Day')
+    ax.set_ylabel('Population')
+    ax.set_title('Infection Simulation')
+    ax.legend(loc='upper left')
+
+    def update(day):
         DayCycle(Households, locations, infectionRate)
         current_infected = sum(1 for household in Households for person in household if person.infected)
         past_infected_count = sum(1 for household in Households for person in household if person.past_infected)
@@ -116,24 +121,27 @@ def Main():
         past_infected.append(past_infected_count)
         days_list.append(day)
 
+        ax.clear()
+        ax.stackplot(days_list, currently_infected, past_infected, never_infected, colors=['red', 'gray', 'blue'], labels=['Currently Infected', 'Past Infected', 'Never Infected'])
+        ax.set_xlabel('Day')
+        ax.set_ylabel('Population')
+        ax.set_title('Infection Simulation')
+        ax.legend(loc='upper left')
+
 
         print(f"Day {day}: {current_infected} currently infected")
 
         if current_infected == 0:
             print(f"All infections resolved by day {day}. Ending simulation early.")
-            break
+            total_infected = sum(1 for household in Households for person in household if person.infected or person.past_infected)
+            print(f"Simulation Over\nTotal Infected: {total_infected}")
+            print(f"Percentage Infected: {total_infected / people * 100:.2f}%")
+            ani.event_source.stop()
+            return False
             
-        day += 1
+        return True
 
-    total_infected = sum(1 for household in Households for person in household if person.infected or person.past_infected)
-    print(f"Simulation Over\nTotal Infected: {total_infected}")
-    print(f"Percentage Infected: {total_infected / people * 100:.2f}%")
-    
-    plt.stackplot(days_list, currently_infected, past_infected, never_infected, colors=['red', 'gray', 'blue'], labels=['Currently Infected', 'Past Infected', 'Never Infected'])
-    plt.xlabel('Day')
-    plt.ylabel('Population')
-    plt.title('Infection Simulation')
-    plt.legend(loc='upper left')
+    ani = animation.FuncAnimation(fig, update, frames=range(days), repeat=False)
     plt.show()
 
 Main()
