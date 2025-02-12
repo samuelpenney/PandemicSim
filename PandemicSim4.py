@@ -87,6 +87,8 @@ def DayCycle(Households, locations, infectionRate):
     DayEvent(Households, locations)
     Home(Households)
 
+
+
 def Main():
     day = 0
     people = int(input("Enter the number of people: "))
@@ -144,4 +146,5 @@ def Main():
     ani = animation.FuncAnimation(fig, update, frames=range(days), repeat=False)
     plt.show()
 
-Main()
+if __name__ == "__main__":
+    Main()
