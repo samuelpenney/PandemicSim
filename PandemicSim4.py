@@ -1,6 +1,7 @@
 import random
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import time
 
 class Person:
     def __init__(self, name):
@@ -9,7 +10,6 @@ class Person:
         self.infected_days = 0
         self.home = None
         self.past_infected = False
-        self.Count = False
         self.Morning = None
         self.Midday = None
         self.Evening = None
@@ -31,12 +31,11 @@ def CreatePopulation(people):
         for j in range(len(Households[i])):
             Households[i][j].home = i + 1
 
-    return Households
-
-def Infect(Households):
     house_i = random.randint(0, len(Households) - 1)
     person_i = random.randint(0, len(Households[house_i]) - 1)
     Households[house_i][person_i].infected = True
+    return Households
+
 
 def DayEvent(Households, locations):
     MorningWarning = []
@@ -71,23 +70,20 @@ def Home(Households):
 def DayCycle(Households, locations, infectionRate):
     for i in range(len(Households)):
         for j in range(len(Households[i])):
-            if Households[i][j].infected:
+            number = random.randint(1, infectionRate)
+            if Households[i][j].infected and Households[i][j].infected_days < 3:
                 Households[i][j].infected_days += 1
-                if Households[i][j].infected_days == 3:
-                    Households[i][j].infected = False
-                    Households[i][j].infected_days = 0
-                    Households[i][j].past_infected = True
-            elif Households[i][j].Exposed and not Households[i][j].past_infected and not Households[i][j].infected:
-                number = random.randint(1, infectionRate)
-                if number == 1:
-                    Households[i][j].infected = True
-                    Households[i][j].infected_days = 0
+            elif Households[i][j].infected and Households[i][j].infected_days >= 3:
+                Households[i][j].infected = False
+                Households[i][j].infected_days = 0
+                Households[i][j].past_infected = True
+            elif Households[i][j].Exposed and not Households[i][j].past_infected and not Households[i][j].infected and number == 1:
+                Households[i][j].infected = True
+                Households[i][j].infected_days = 0
             Households[i][j].Exposed = False
     
     DayEvent(Households, locations)
     Home(Households)
-
-
 
 def Main():
     day = 0
@@ -95,11 +91,11 @@ def Main():
     locations = int(input("Enter the number of locations: "))
     infectionRate = int(input("Enter the infection rate: "))
     days = int(input("Enter the number of days: "))
+    start_time = time.time()
     if people <= 0 or locations <= 0 or infectionRate <= 0 or days <= 0:
         print("Invalid input. Exiting")
         return
     Households = CreatePopulation(people)
-    Infect(Households)
 
     never_infected = []
     currently_infected = []
@@ -107,10 +103,6 @@ def Main():
     days_list = []
 
     fig, ax = plt.subplots()
-    ax.set_xlabel('Day')
-    ax.set_ylabel('Population')
-    ax.set_title('Infection Simulation')
-    ax.legend(loc='upper left')
 
     def update(day):
         DayCycle(Households, locations, infectionRate)
@@ -127,17 +119,20 @@ def Main():
         ax.stackplot(days_list, currently_infected, past_infected, never_infected, colors=['red', 'gray', 'blue'], labels=['Currently Infected', 'Past Infected', 'Never Infected'])
         ax.set_xlabel('Day')
         ax.set_ylabel('Population')
-        ax.set_title('Infection Simulation')
+        ax.set_title('Epidemic Simulation')
         ax.legend(loc='upper left')
 
 
         print(f"Day {day}: {current_infected} currently infected")
 
         if current_infected == 0:
+            stop_time = time.time()
+            elasped_time = stop_time - start_time
             print(f"All infections resolved by day {day}. Ending simulation early.")
             total_infected = sum(1 for household in Households for person in household if person.infected or person.past_infected)
             print(f"Simulation Over\nTotal Infected: {total_infected}")
             print(f"Percentage Infected: {total_infected / people * 100:.2f}%")
+            print(f"Elapsed Time: {elasped_time:.2f} seconds")
             ani.event_source.stop()
             return False
             
@@ -145,6 +140,10 @@ def Main():
 
     ani = animation.FuncAnimation(fig, update, frames=range(days), repeat=False)
     plt.show()
+    
 
 if __name__ == "__main__":
     Main()
+
+
+
