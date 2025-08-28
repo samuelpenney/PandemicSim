@@ -1,5 +1,5 @@
 import random
-import TestingClasses as tc
+import Testing.TestingClasses as tc
 def infect(humans):
     human = random.choice(humans)
     human.infected = True
