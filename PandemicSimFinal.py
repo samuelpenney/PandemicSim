@@ -39,7 +39,7 @@ def CreatePopulation(people): # Creates a population of people and organizes the
 def DayEvent(Households, locations): # Simulates daily events where people will visit different locations and potentially spread the infection
     MorningWarning = [] # Lists to track locations visited by infected individuals
     MiddayWarning = [] 
-    EveningWarning = [] []
+    EveningWarning = []
     for i in range(len(Households)): # Iterate through each household
         for j in range(len(Households[i])): # Iterate through each person in the household
             Households[i][j].Morning = random.randint(0, locations) # Assign random locations for morning, midday, and evening
