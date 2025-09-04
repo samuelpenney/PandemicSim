@@ -131,6 +131,15 @@ def Main(): # Main function to run the simulation
             print(f"Elapsed Time: {elasped_time:.2f} seconds") # Show elasped time
             ani.event_source.stop() # Stop the animation
             return False
+        if day == days - 1: # If the simulation reaches the last day, print summary statistics
+            stop_time = time.time() # Stop the timer
+            elasped_time = stop_time - start_time
+            print("Simulation Over")
+            total_infected = sum(1 for household in Households for person in household if person.infected or person.past_infected)
+            print(f"Total Infected: {total_infected}")
+            print(f"Percentage Infected: {total_infected / people * 100:.2f}%")
+            print(f"Elapsed Time: {elasped_time:.2f} seconds")
+            
              
         return True
 
