@@ -135,6 +135,7 @@ public class EpidemicSim { // Main class for the epidemic simulation
 
         if (people < 1 || locations < 1 || infectionRate < 1 || days < 1) {
             System.out.println("All inputs must be positive integers greater than zero.");
+            sc.close();
             return; // Exit if inputs are invalid
         }
 
@@ -161,6 +162,7 @@ public class EpidemicSim { // Main class for the epidemic simulation
                 System.out.printf("Simulation Over%nTotal Infected: %d%n", totalInfected);
                 System.out.printf("Percentage Infected: %.2f%%%n", (totalInfected * 100.0 / people));
                 System.out.printf("Elapsed Time: %.2f seconds%n", elapsedTime / 1000.0);
+                sc.close();
                 return;
             }
         }
@@ -177,5 +179,6 @@ public class EpidemicSim { // Main class for the epidemic simulation
         System.out.printf("Total Infected: %d%n", totalInfected);
         System.out.printf("Percentage Infected: %.2f%%%n", (totalInfected * 100.0 / people));
         System.out.printf("Elapsed Time: %.2f seconds%n", elapsedTime / 1000.0);
+        sc.close();
     }
 }
